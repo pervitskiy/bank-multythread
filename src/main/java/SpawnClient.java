@@ -2,6 +2,9 @@ import java.util.Random;
 
 public class SpawnClient extends Thread{
 
+    /**
+     * The average customer service time
+     */
     private static final long SERVICE_TIME = 3500;
     /**
      * The average amount of money that a client has when it is created
@@ -34,7 +37,7 @@ public class SpawnClient extends Thread{
     }
 
     /**
-     * The method creates a new client at a specified time interval and redirects him to the queue to the bank cashier
+     * The method creates a new client at a specified time interval and redirects him to the queue to the bank teller
      */
     @Override
     public void run() {
@@ -52,7 +55,7 @@ public class SpawnClient extends Thread{
                 else
                     client = new Client(clientCash, clientServiceTime,TypeOperation.WITHDRAW_MONEY);
 
-                bank.findFreeTeller(client);
+                bank.findFreeTellerAndAddClient(client);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bank {
+    /
     private List<Teller> tellers = new ArrayList<>();
     private int countTeller;
     private Cashbox cashbox;
@@ -12,6 +13,9 @@ public class Bank {
         this.cashbox.put(cash);
     }
 
+    /**
+     * Launch of all cashier flows and customer generation flow
+     */
     public void start(){
         for (int i = 0; i < this.countTeller; i++) {
             Teller teller = new Teller(i+1);
@@ -22,7 +26,12 @@ public class Bank {
         generator.start();
     }
 
-    public void findFreeTeller(Client client){
+    /**
+     * Find a free cashier and add a customer to it
+     *
+     * @param client - new Client
+     */
+    public void findFreeTellerAndAddClient(Client client){
         Teller tr = tellers.get(0);
         int minClient = tellers.get(0).size();
         for (Teller teller : tellers) {

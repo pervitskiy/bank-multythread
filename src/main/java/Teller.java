@@ -7,7 +7,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Teller implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(Teller.class);
+    /**
+     * The indexer teller
+     */
     private int id;
+
+    /**
+     * The queue of clients to be served
+     */
     private BlockingQueue<Client> clients = new LinkedBlockingQueue<>();
 
     public Teller() {}
@@ -16,11 +23,22 @@ public class Teller implements Runnable {
         this.id = id;
     }
 
+    /**
+     * Put money in the cashBox
+     *
+     * @param sum - the amount of money
+     * @param client - the client who wants to perform the operation
+     */
     private void putMoneyInCashBox(double sum, Client client){
         Cashbox.getCashbox().put(sum);
         LOGGER.info("Оператор положил в кассу: " + sum + " клиента " + client);
     }
 
+    /** Withdraw money from the cashBox
+     *
+     * @param sum - the amount of money
+     * @param client - the client who wants to perform the operation
+     */
     private void withDrawMoneyInCashBox(double sum, Client client){
         if (Cashbox.getCashbox().withdraw(sum)){
             LOGGER.info("Оператор взял из кассы: " + sum + " для клиента " + client);
@@ -30,11 +48,15 @@ public class Teller implements Runnable {
         }
     }
 
+    /** Add client to the queue
+     *
+     * @param newClient - client to add to the queue
+     */
     public void addClient(Client newClient){
         synchronized (clients) {
             clients.add(newClient);
             LOGGER.info("Клиент " + newClient + " добавился в очередь к оператору teller " + this.id);
-            clients.notify();
+            clients.notify(); //снимаем блокировку на поток, так как теперь у нас есть клиенты в очереди
         }
     }
 
@@ -42,6 +64,12 @@ public class Teller implements Runnable {
         return clients.size();
     }
 
+    /**
+     * The cashier's method of operation.
+     * If the client queue is empty, then the thread is waiting for new clients.
+     * If the queue of clients is not empty, then the first client is selected and the work occurs(the thread falls asleep)
+     * and the execution of the type of client operation
+     */
     @Override
     public void run() {
         Client client;
